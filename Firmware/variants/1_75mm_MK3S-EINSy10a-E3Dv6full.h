@@ -19,7 +19,7 @@
 #define DEVELOPER
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S"
+#define CUSTOM_MENDEL_NAME "Phrusa i3 MK3S"
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
@@ -43,7 +43,7 @@
 
 // Steps per unit {X,Y,Z,E}
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,280}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100.3874090658223,100.3874090658223,3200/8,280} //3200/8,280}
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,560}
 
 // Endstop inverting
@@ -69,7 +69,7 @@
 #define X_MIN_POS 0
 #define Y_MAX_POS 212.5
 #define Y_MIN_POS -4 //orig -4
-#define Z_MAX_POS 210
+#define Z_MAX_POS 211
 #define Z_MIN_POS 0.15
 
 // Canceled home position
@@ -137,7 +137,7 @@
 
 // Safety timer
 #define SAFETYTIMER
-#define DEFAULT_SAFETYTIMER_TIME_MINS 30
+#define DEFAULT_SAFETYTIMER_TIME_MINS 420
 #define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
 
 // Filament sensor
@@ -153,7 +153,7 @@
 // this value is litlebit higher that real limit, because ambient termistor is on the board and is temperated from it,
 // temperature inside the case is around 31C for ambient temperature 25C, when the printer is powered on long time and idle
 // the real limit is 15C (same as MINTEMP limit), this is because 15C is end of scale for both used thermistors (bed, heater)
-#define MINTEMP_MINAMBIENT      25
+#define MINTEMP_MINAMBIENT      5
 #define MINTEMP_MINAMBIENT_RAW  978
 
 #define DEBUG_DCODE3
@@ -264,11 +264,11 @@
 #define TMC2130_SG_THRS_E       3     // stallguard sensitivity for E axis
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
-#define TMC2130_CURRENTS_H {16, 20, 35, 30}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {16, 20, 35, 30}  // default running currents for all axes
+#define TMC2130_CURRENTS_H {30, 30, 60, 50}  // default holding currents for all axes
+#define TMC2130_CURRENTS_R {30, 30, 60, 50}  // default running currents for all axes
 #define TMC2130_UNLOAD_CURRENT_R 12			 // lowe current for M600 to protect filament sensor 
 
-#define TMC2130_STEALTH_Z
+//#define TMC2130_STEALTH_Z
 
 //#define TMC2130_SERVICE_CODES_M910_M918
 
@@ -282,14 +282,14 @@
  *------------------------------------*/
 
 // Mintemps
-#define HEATER_0_MINTEMP 15
+#define HEATER_0_MINTEMP 5
 #define HEATER_1_MINTEMP 5
 #define HEATER_2_MINTEMP 5
 #define HEATER_MINTEMP_DELAY 15000                // [ms] ! if changed, check maximal allowed value @ ShortTimer
 #if HEATER_MINTEMP_DELAY>USHRT_MAX
 #error "Check maximal allowed value @ ShortTimer (see HEATER_MINTEMP_DELAY definition)"
 #endif
-#define BED_MINTEMP 15
+#define BED_MINTEMP 5
 #define BED_MINTEMP_DELAY 50000                   // [ms] ! if changed, check maximal allowed value @ ShortTimer
 #if BED_MINTEMP_DELAY>USHRT_MAX
 #error "Check maximal allowed value @ ShortTimer (see BED_MINTEMP_DELAY definition)"
