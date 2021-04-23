@@ -23,9 +23,11 @@ void lcd_setstatuspgm(const char* message);
 //! - always returns the display to the main status screen
 //! - always makes lcd_reset (which is slow and causes flicker)
 //! - does not update the message if there is already one (i.e. lcd_status_message_level > 0)
+void lcd_setalertstatus(const char* message);
 void lcd_setalertstatuspgm(const char* message);
 //! only update the alert message on the main status screen
 //! has no sideeffects, may be called multiple times
+void lcd_updatestatus(const char *message);
 void lcd_updatestatuspgm(const char *message);
 
 void lcd_reset_alert_level();
@@ -42,10 +44,10 @@ void lcd_change_success();
 void lcd_loading_color();
 void lcd_sdcard_stop();
 void lcd_pause_print();
+void lcd_pause_usb_print();
 void lcd_resume_print();
 void lcd_print_stop();
 void prusa_statistics(int _message, uint8_t _col_nr = 0);
-void lcd_confirm_print();
 unsigned char lcd_choose_color();
 void lcd_load_filament_color_check();
 //void lcd_mylang();
@@ -113,19 +115,21 @@ extern int8_t FSensorStateMenu;
 
 enum class CustomMsg : uint_least8_t
 {
-	Status,          //!< status message from lcd_status_message variable
-	MeshBedLeveling, //!< Mesh bed leveling in progress
-	FilamentLoading, //!< Loading filament in progress
-	PidCal,          //!< PID tuning in progress
-	TempCal,         //!< PINDA temperature calibration
-	TempCompPreheat, //!< Temperature compensation preheat
+    Status,          //!< status message from lcd_status_message variable
+    MeshBedLeveling, //!< Mesh bed leveling in progress
+    FilamentLoading, //!< Loading filament in progress
+    PidCal,          //!< PID tuning in progress
+    TempCal,         //!< PINDA temperature calibration
+    TempCompPreheat, //!< Temperature compensation preheat
+    M0Wait,          //!< M0/M1 Wait command working even from SD
+    MsgUpdate,       //!< Short message even while printing from SD
+    Resuming,       //!< Resuming message
 };
 
 extern CustomMsg custom_message_type;
 extern unsigned int custom_message_state;
 
 extern uint8_t farm_mode;
-extern int farm_no;
 extern int farm_timer;
 extern uint8_t farm_status;
 
@@ -142,7 +146,7 @@ extern uint8_t farm_status;
 
 #ifdef IR_SENSOR_ANALOG
 extern bool bMenuFSDetect;
-void printf_IRSensorAnalogBoardChange(bool bPCBrev04);
+void printf_IRSensorAnalogBoardChange();
 #endif //IR_SENSOR_ANALOG
 
 extern int8_t SilentModeMenu;
@@ -150,6 +154,8 @@ extern uint8_t SilentModeMenu_MMU;
 
 extern bool cancel_heatup;
 extern bool isPrintPaused;
+
+extern uint8_t scrollstuff;
 
 
 void lcd_ignore_click(bool b=true);
@@ -189,7 +195,7 @@ extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
 void mFilamentItemForce();
 void lcd_generic_preheat_menu();
-void unload_filament();
+void unload_filament(bool automatic = false);
 
 void stack_error();
 void lcd_printer_connected();
@@ -205,6 +211,7 @@ void lcd_farm_sdcard_menu_w();
 
 void lcd_wait_for_heater();
 void lcd_wait_for_cool_down();
+void lcd_move_e(); // NOT static due to usage in Marlin_main
 void lcd_extr_cal_reset();
 
 void lcd_temp_cal_show_result(bool result);
@@ -223,10 +230,7 @@ void lcd_temp_calibration_set();
 
 void display_loading();
 
-#if !SDSORT_USES_RAM
 void lcd_set_degree();
-void lcd_set_progress();
-#endif
 
 #if (LANG_MODE != 0)
 void lcd_language();
@@ -257,21 +261,11 @@ enum class WizState : uint8_t
 
 void lcd_wizard(WizState state);
 
-#define VOLT_DIV_REF 5
-#ifdef IR_SENSOR_ANALOG
-constexpr uint16_t Voltage2Raw(float V){
-	return ( V * 1023 * OVERSAMPLENR / VOLT_DIV_REF ) + 0.5F;
-}
-constexpr float Raw2Voltage(uint16_t raw){
-	return VOLT_DIV_REF*(raw / (1023.F * OVERSAMPLENR) );
-}
-constexpr uint16_t IRsensor_Hmin_TRESHOLD = Voltage2Raw(3.0F); // ~3.0V (0.6*Vcc), raw value=9821
-constexpr uint16_t IRsensor_Lmax_TRESHOLD = Voltage2Raw(1.5F); // ~1.5V (0.3*Vcc), raw value=4910
-constexpr uint16_t IRsensor_Hopen_TRESHOLD = Voltage2Raw(4.6F); // ~4.6V (N.C. @ Ru~20-50k, Rd'=56k, Ru'=10k), raw value=15059
-constexpr uint16_t IRsensor_Ldiode_TRESHOLD = Voltage2Raw(0.3F); // ~0.3V, raw value=982
-constexpr uint16_t IRsensor_VMax_TRESHOLD = Voltage2Raw(5.F); // ~5V, raw value=16368
+extern void lcd_experimental_toggle();
+extern void lcd_experimental_menu();
 
-
-#endif //IR_SENSOR_ANALOG
+#ifdef PINDA_TEMP_COMP
+extern void lcd_pinda_temp_compensation_toggle();
+#endif //PINDA_TEMP_COMP
 
 #endif //ULTRALCD_H
